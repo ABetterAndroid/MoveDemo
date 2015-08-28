@@ -5,6 +5,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 
 import java.lang.reflect.Field;
@@ -68,6 +72,15 @@ public class FloatWindowView extends LinearLayout {
 
 	private View expandView;
 
+	/**
+	 * 隐藏动画
+	 */
+	private final TranslateAnimation hideAnimation;
+	/**
+	 * 显示动画
+	 */
+	private final TranslateAnimation showAnimation;
+
 	public FloatWindowView(Context context) {
 		super(context);
 		windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -76,6 +89,34 @@ public class FloatWindowView extends LinearLayout {
 		viewWidth = view.getLayoutParams().width;
 		viewHeight = view.getLayoutParams().height;
 		expandView = findViewById(R.id.expand_view);
+		hideAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+				Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF,
+				0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+		showAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, -1.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+				0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+		Interpolator interpolator = new DecelerateInterpolator();
+		hideAnimation.setInterpolator(interpolator);
+		hideAnimation.setDuration(500);
+		hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				expandView.setVisibility(View.GONE);
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+		});
+		showAnimation.setInterpolator(interpolator);
+		showAnimation.setDuration(500);
+
 	}
 
 	@Override
@@ -100,10 +141,17 @@ public class FloatWindowView extends LinearLayout {
 			// 如果手指离开屏幕时，xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
 			if (xDownInScreen == xInScreen && yDownInScreen == yInScreen) {
 				// TODO: 2015/8/26 点击悬浮窗
-				expandView.startAnimation(new ViewExpandAnimation(expandView));
+				if (expandView.getVisibility() == View.GONE) {
+					expandView.setVisibility(View.VISIBLE);
+					expandView.startAnimation(showAnimation);
+				} else {
+					expandView.startAnimation(hideAnimation);
+				}
+//				expandView.startAnimation(new ViewExpandAnimation(expandView));
+
 			}
 			break;
-		default:
+			default:
 			break;
 		}
 		return true;

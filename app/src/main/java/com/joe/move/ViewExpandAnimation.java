@@ -4,7 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.FrameLayout.LayoutParams;
 
 /**
  * Created by qiaorongzhu on 2015/8/26.

@@ -11,7 +11,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MyWindowManager.createSmallWindow(getApplicationContext());
     }
 
     @Override
@@ -36,9 +35,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyWindowManager.createSmallWindow(getApplicationContext());
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
-        MyWindowManager.removeSmallWindow(this);
+        MyWindowManager.removeSmallWindow(getApplicationContext());
     }
 }
